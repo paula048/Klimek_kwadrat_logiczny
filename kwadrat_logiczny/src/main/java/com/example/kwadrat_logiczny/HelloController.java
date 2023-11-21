@@ -1,15 +1,19 @@
 package com.example.kwadrat_logiczny;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class HelloController {
@@ -52,49 +56,166 @@ public class HelloController {
     private VBox vbox2;
 
 
+    public List<SpanningTree> spanningTrees = new ArrayList<>();
 
     public void initialize() {
+
+
+        // Podstawa towrzenie listy kwadratów
+        spanningTrees.add(spanningTree);
+        spanningTrees.add(spanningTree2);
+        spanningTrees.add(spanningTree3);
 
         //vbox2
         Label selectedLeaf = new Label("set leaf A");
         vbox2.getChildren().add(selectedLeaf);
 
-
-        ChoiceBox<Integer> choiceBox = new ChoiceBox<>();
-        choiceBox.getItems().add(0);
-        choiceBox.getItems().add(1);
-
-        vbox2.getChildren().add(choiceBox);
-        System.out.println("second");
-
-        Pane transition2Pane = new Pane();
-        vbox2.getChildren().add(transition2Pane);
-
-        Rectangle square2 = new Rectangle(200, 300, 100, 100);
-        square2.setFill(Color.CADETBLUE);
-        transition2Pane.getChildren().add(square2);
-        //label_selectState.setText("select A:");
+        createTabPane();
 
 
 
+
+
+
+
+
+    }
+
+
+
+
+    public void createTabPane(){
+        // deklaracja
+
+        VBox vBox1 = new VBox();
+        VBox vBox2 = new VBox();
+        VBox vBox3 = new VBox();
+
+
+        // towrzenie panelu ze zmiennym widokiem
 
         TabPane tabPane = new TabPane();
 
         Tab tab1 = new Tab();
         tab1.setText("Square 1");
+        createTab(vBox1, square1);
+        tab1.setContent(vBox1);
         tabPane.getTabs().add(tab1);
 
         Tab tab2 = new Tab();
         tab2.setText("Square 2");
+        createTab(vBox2, square2);
+        tab2.setContent(vBox2);
         tabPane.getTabs().add(tab2);
 
         Tab tab3 = new Tab();
         tab3.setText("Square 3");
+        createTab(vBox3, square3);
+        tab3.setContent(vBox3);
         tabPane.getTabs().add(tab3);
 
-        VBox vbox = new VBox(tabPane);
 
+        VBox vbox = new VBox(tabPane);
         vbox2.getChildren().add(vbox);
+    }
+
+
+    public void createTab(VBox vBox, Square square){
+
+        Rectangle rectangle = new Rectangle(200, 100, 100, 100);
+        rectangle.setFill(Color.DARKSEAGREEN);
+
+        Button haha = new Button("click");
+        vBox.getChildren().add(haha);
+
+        Button b1 = new Button("A");
+        Button b2 = new Button("E");
+        Button b3 = new Button("I");
+        Button b4 = new Button("O");
+
+        checkLeaf_color(b1);
+        checkLeaf_color(b2);
+        checkLeaf_color(b3);
+        checkLeaf_color(b4);
+
+        //mozliwosc optymalizacji  przez liste
+        ArrayList<Button> buttonBox = new ArrayList<Button>(Arrays.asList(b1,b2,b3,b4));
+
+
+
+        //  towrzenie kwadratu z liśćmi(leafs) jako przyciskami
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.add(b1,0,0);
+        gridPane.add(b2,2,0);
+        gridPane.add(rectangle,1,1);
+        gridPane.add(b3,0,2);
+        gridPane.add(b4,2,2);
+
+        vBox.getChildren().add(gridPane);
+
+
+        ChoiceBox<Integer> choiceBox1 = new ChoiceBox<>();
+        choiceBox1.getItems().add(0);
+        choiceBox1.getItems().add(1);
+        ChoiceBox<Integer> choiceBox2 = new ChoiceBox<>();
+        choiceBox2.getItems().add(0);
+        choiceBox2.getItems().add(1);
+        ChoiceBox<Integer> choiceBox3 = new ChoiceBox<>();
+        choiceBox3.getItems().add(0);
+        choiceBox3.getItems().add(1);
+        ChoiceBox<Integer> choiceBox4 = new ChoiceBox<>();
+        choiceBox4.getItems().add(0);
+        choiceBox4.getItems().add(1);
+
+
+        Label label_tmp1 = new Label("SET A:\t "+square.getLu());
+        Label label_tmp2 = new Label("SET I:\t "+square.getLd());
+        Label label_tmp3 = new Label("SET O:\t "+square.getRd());
+        Label label_tmp4 = new Label("SET E:\t "+square.getRu());
+
+        HBox hBox1 = new HBox();
+        HBox hBox2 = new HBox();
+        HBox hBox3 = new HBox();
+        HBox hBox4 = new HBox();
+
+        hBox1.getChildren().add(label_tmp1);
+        hBox1.getChildren().add(choiceBox1);
+        hBox2.getChildren().add(label_tmp2);
+        hBox2.getChildren().add(choiceBox2);
+        hBox3.getChildren().add(label_tmp3);
+        hBox3.getChildren().add(choiceBox3);
+        hBox4.getChildren().add(label_tmp4);
+        hBox4.getChildren().add(choiceBox4);
+
+
+        vBox.getChildren().add(hBox1);
+        vBox.getChildren().add(hBox2);
+        vBox.getChildren().add(hBox3);
+        vBox.getChildren().add(hBox4);
+    }
+
+
+    private void checkLeaf_color(Button btn){
+
+        /*  optymalizacja
+        for (int i = 0; i < Cars.size(); i++) {
+            Cars.set(i, Cars.get(i) + "A");
+        }
+        */
+
+
+        btn.setOnAction(e -> {
+
+            if(btn.getStyle().contains("-fx-background-color: red;")){
+                btn.setStyle("");
+            }
+            else{
+                btn.setStyle("-fx-background-color: red;");
+
+            }
+
+        });
 
 
     }
@@ -161,15 +282,6 @@ public class HelloController {
 
 
 
-/*
-    public void goGenerate(ActionEvent actionEvent) {
-        Rectangle square = new Rectangle(200, 100, 100, 100);
-        transitionPane.getChildren().add(square);
-    }
-*/
-
-
-
 
     public int generateState = 0;
     public void goTransition(ActionEvent actionEvent) {
@@ -177,11 +289,7 @@ public class HelloController {
 
 
 
-        List<SpanningTree> spanningTrees = new ArrayList<>();
 
-        spanningTrees.add(spanningTree);
-        spanningTrees.add(spanningTree2);
-        spanningTrees.add(spanningTree3);
 
 
 
@@ -255,5 +363,35 @@ public class HelloController {
         }
 
 
+    }
+}
+
+
+class Person {
+    private String firstName = null;
+    private String lastName = null;
+
+    public Person() {
+    }
+
+    public Person(String firstName, String lastName) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 }
