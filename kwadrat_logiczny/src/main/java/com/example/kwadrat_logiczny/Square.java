@@ -41,12 +41,53 @@ public class Square {
     private String ru;
     private String rd;
 
+    public Integer getLdState() {
+        return ldState;
+    }
+
+    public void setLdState(Integer ldState) {
+        this.ldState = ldState;
+    }
+
+    public Integer getLuState() {
+        return luState;
+    }
+
+    public void setLuState(Integer luState) {
+        this.luState = luState;
+    }
+
+    public Integer getRuState() {
+        return ruState;
+    }
+
+    public void setRuState(Integer ruState) {
+        this.ruState = ruState;
+    }
+
+    public Integer getRdState() {
+        return rdState;
+    }
+
+    public void setRdState(Integer rdState) {
+        this.rdState = rdState;
+    }
+
+    private Integer ldState = null;
+    private Integer luState = null;
+    private Integer ruState = null;
+    private Integer rdState = null;
+
 
     public Square(String ld, String lu, String ru, String rd) {
         this.ld = ld;
         this.lu = lu;
         this.ru = ru;
         this.rd = rd;
+    }
+
+    public Square() {
+
     }
 
 

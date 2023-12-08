@@ -14,6 +14,16 @@ public class SpanningTree {
     }
 
 
+    public String getScenarios_L() {
+        return leftLeaf.replace("\n&\n", " & ");
+    }
+    public String getScenarios_M() {
+        return middleLeaf.replace("\n&\n", " & ");
+    }
+    public String getScenarios_R() {
+        return rightLeaf.replace("\n&\n", " & ");
+    }
+
     public String getLeftLeaf() {
         return leftLeaf;
     }

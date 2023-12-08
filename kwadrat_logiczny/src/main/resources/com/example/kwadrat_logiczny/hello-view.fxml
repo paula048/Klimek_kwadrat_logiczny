@@ -3,16 +3,29 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<VBox alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.kwadrat_logiczny.HelloController">
+<VBox fx:id="mainBox" alignment="CENTER" spacing="20.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.kwadrat_logiczny.HelloController">
         <padding>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
         </padding>
 
         <Label fx:id="welcomeText" />
         <HBox>
+            <VBox fx:id="vbox2">
+                <Button onAction="#addSquare" text="+" textAlignment="JUSTIFY">
+                    <font>
+                        <Font name="Bodoni MT Black" size="24.0" />
+                    </font>
+                </Button>
+            </VBox>
             <VBox>
-                <Button onAction="#onHelloButtonClick" text="ADD" />
+
+                <StackPane><Label text="Square view">
+               <font>
+                  <Font size="30.0" />
+               </font></Label></StackPane>
+
                 <ScrollPane maxWidth="-Infinity" prefHeight="621.0" prefWidth="600.0">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1000" prefWidth="518.0">
@@ -22,10 +35,14 @@
                             </children></AnchorPane>
                     </content>
                 </ScrollPane>
+                <Button mnemonicParsing="false" onAction="#test" text="TEST Logi" />
             </VBox>
 
             <VBox>
-                <Button mnemonicParsing="false" onAction="#goTransition" text="Generate" />
+                <StackPane><Label text="Spanning Tree">
+               <font>
+                  <Font size="30.0" />
+               </font></Label></StackPane>
                 <ScrollPane prefHeight="621.0" prefWidth="672.0">
                     <content>
                         <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="1000" prefWidth="518.0">
@@ -35,13 +52,19 @@
                         </AnchorPane>
                     </content>
                 </ScrollPane>
+
             </VBox>
 
 
-            <VBox fx:id="vbox2">
 
+            <VBox fx:id="vbox3">
             </VBox>
         </HBox>
+
+
+
+
+
    <GridPane>
      <columnConstraints>
        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -53,7 +76,7 @@
        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
      </rowConstraints>
    </GridPane>
-   <Button mnemonicParsing="false" text="Button" />
+   <TextFlow fx:id="textFlow" prefHeight="200.0" prefWidth="200.0" />
 
 
 
