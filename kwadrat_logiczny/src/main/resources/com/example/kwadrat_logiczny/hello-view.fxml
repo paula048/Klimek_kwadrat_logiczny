@@ -36,6 +36,7 @@
                     </content>
                 </ScrollPane>
                 <Button mnemonicParsing="false" onAction="#test" text="TEST Logi" />
+                <Button mnemonicParsing="false" onAction="#drawStateMachine" text="State Machine" />
             </VBox>
 
             <VBox>
@@ -77,6 +78,8 @@
      </rowConstraints>
    </GridPane>
    <TextFlow fx:id="textFlow" prefHeight="200.0" prefWidth="200.0" />
+   <TextField text="Hello" />
+   <TextField minHeight="20.0" minWidth="20.0" prefHeight="5.0" text="TRIGGER" />
 
 
 

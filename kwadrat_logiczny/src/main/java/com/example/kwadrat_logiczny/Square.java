@@ -86,7 +86,7 @@ public class Square {
         this.rd = rd;
     }
 
-    public Square() {
+    public Square() {               // ważne, musi zostać
 
     }
 

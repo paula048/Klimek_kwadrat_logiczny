@@ -5,16 +5,16 @@ import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextFlow;
+import javafx.scene.text.*;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
@@ -24,18 +24,13 @@ import java.util.List;
 public class HelloController {
 
     @FXML
-    private Pane drawingPane; // Add this line
-
+    private Pane drawingPane;
     @FXML
-    private Pane transitionPane; // Add this line
-
-
+    private Pane transitionPane;
 
 
     public boolean isDrawn_SpanningTree = false;
-
     private int squareDrawn = 0;
-
 
 
     // stworzenie przykladowych kwadratów
@@ -53,10 +48,6 @@ public class HelloController {
     @FXML
     private VBox vbox2;
 
-
-
-
-
     public List<SpanningTree> spanningTrees = new ArrayList<>();
 
     public List<SpanningTree_Label> spanningTreeLabels = new ArrayList<>();
@@ -71,6 +62,8 @@ public class HelloController {
     public List<Square> createdSquare = new ArrayList<>();
     public List<DrawSquare> drawSquares = new ArrayList<>();
 
+    // spanningTrees & createdSquare    works correctly
+
     public void initialize() {
         // zmienna sprwdzajaca czy zmieniono wartośći w kwadracie
         isCornerChange.add(new Corner());
@@ -79,6 +72,38 @@ public class HelloController {
 
 
         createdSquare.add(new Square());
+
+
+
+
+
+
+
+
+        // test draw a State machine diagram
+
+
+//        Circle start = new Circle(100, 100, 50);
+//        start.setFill(Color.CADETBLUE);
+//        Circle run = new Circle(300, 100, 50);
+//        Circle stop = new Circle(500, 100, 50);
+//
+//        // Draw state names
+//        Text startText = new Text(90, 105, "Start");
+//        Text runText = new Text(290, 105, "Run");
+//        Text stopText = new Text(490, 105, "Stop");
+//
+//        // Draw arrows for transitions
+//        Line startToRun = new Line(150, 100, 250, 100);
+//        Line runToStop = new Line(350, 100, 450, 100);
+//
+//        drawingPane.getChildren().addAll(start, run, stop, startText, runText, stopText, startToRun, runToStop);
+
+
+
+
+
+
 
 
 
@@ -98,7 +123,13 @@ public class HelloController {
 
         VBox vbox = new VBox(tabPane);
         vbox2.getChildren().add(vbox);
-        vbox2.getChildren().add(new Button("HEHE XD"));
+
+
+        Button button_window = new Button("New Window");
+        button_window.setOnAction(e -> {
+            openNewWindow();
+        });
+        vbox2.getChildren().add(button_window);
 
 
         for (int i = 0; i < 3; i++) {
@@ -111,6 +142,63 @@ public class HelloController {
 
 
     }
+
+
+
+    private void openNewWindow() {
+
+
+        Button nextButton = new Button("GO next");
+        nextButton.setOnAction(e -> System.out.println("Next button clicked!"));
+
+
+        VBox secondaryLayout = new VBox();
+
+
+        for(int i = 0; i<spanningTrees.size(); i++){
+            if(spanningTrees.get(i).getChoseedCorner() != "left"){
+                Label state = new Label(spanningTrees.get(i).getLeftLeaf());
+                state.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, new CornerRadii(10), Insets.EMPTY)));
+                state.setPadding(new Insets(10));
+                secondaryLayout.setMargin(state, new Insets(0, 0, 15, 15));      // [top, right, down, left]
+                secondaryLayout.getChildren().add(state);
+            }
+            if(spanningTrees.get(i).getChoseedCorner() != "middle"){
+                Label state = new Label(spanningTrees.get(i).getMiddleLeaf());
+                state.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, new CornerRadii(10), Insets.EMPTY)));
+                state.setPadding(new Insets(10));
+                secondaryLayout.setMargin(state, new Insets(0, 0, 15, 15));
+                secondaryLayout.getChildren().add(state);
+            }
+            if(spanningTrees.get(i).getChoseedCorner() != "right"){
+                Label state = new Label(spanningTrees.get(i).getRightLeaf());
+                state.setBackground(new Background(new BackgroundFill(Color.CADETBLUE, new CornerRadii(10), Insets.EMPTY)));
+                state.setPadding(new Insets(10));
+                secondaryLayout.setMargin(state, new Insets(0, 0, 15, 15));
+                secondaryLayout.getChildren().add(state);
+            }
+
+
+        }
+
+
+
+        secondaryLayout.getChildren().add(nextButton);
+
+
+
+
+
+        Scene secondScene = new Scene(secondaryLayout, 500, 380);
+
+        Stage secondStage = new Stage();
+        secondStage.setTitle("New Window");
+        secondStage.setScene(secondScene);
+
+        secondStage.initStyle(StageStyle.UTILITY);
+        secondStage.show();
+    }
+
 
 
 
@@ -352,12 +440,12 @@ public class HelloController {
         }
 
 
-            if(generateState<squareDrawn){
-                goTransition();
-            }
-            else{
-                Update_SpanningTree();
-            }
+        if(generateState<squareDrawn){
+            goTransition();
+        }
+        else{
+            Update_SpanningTree();
+        }
 
 
 
@@ -478,46 +566,48 @@ public class HelloController {
                 }
 
                 int yOffset = 200 * (i);
+                int finalI = i;             // nr_kwadratu
+
+
 
 
                 // rysowanie kwadratów ---------------------------------------------------
+
+                // kwadrat środkowy
                 Rectangle square = new Rectangle(200, 300+yOffset, 100, 100);
                 square.setFill(Color.CADETBLUE);
                 transitionPane.getChildren().add(square);
 
-
-                int finalI = i;
-
-
                 square.setOnMouseClicked(event -> {
-                        onClick_chooseNode(square, finalI);
-                    });
+                    onClick_chooseNode(square, finalI, "middle");             // animacja kliknięcia
+//                        SpanningTree tmp = spanningTrees.get(finalI);
+//                        tmp.setChoseedCorner("middle");
+//                        spanningTrees.set(finalI, tmp);
+                });
 
-                    Tooltip t = new Tooltip("Select this node");
-                    Tooltip.install(square, t);
-                    t.setShowDelay(Duration.seconds(0));
+                Tooltip t = new Tooltip("Select this node");
+                Tooltip.install(square, t);
+                t.setShowDelay(Duration.seconds(0));
 
                 square.setOnMouseEntered(event -> {
                     square.setCursor(Cursor.HAND); // Change cursor to hand on hover
-                    });
-
+                });
 
                 square.setOnMouseExited(event -> {
                     square.setCursor(Cursor.DEFAULT); // Change cursor back to default when not hovering
-                    });
-                    System.out.println("DO: "+finalI);
+                });
+                System.out.println("DO: "+finalI);
 
 
 
 
-
-
+                // kwadrat lewy
                 Rectangle squareL = new Rectangle(0, 300+yOffset, 100, 100);
                 squareL.setFill(Color.CADETBLUE);
                 transitionPane.getChildren().add(squareL);
 
                 squareL.setOnMouseClicked(event -> {
-                    onClick_chooseNode(squareL, finalI);
+                    onClick_chooseNode(squareL, finalI, "left");
                 });
 
                 Tooltip t2 = new Tooltip("Select this node");
@@ -535,13 +625,21 @@ public class HelloController {
 
 
 
+                // kwadrat prawy
                 Rectangle squareR = new Rectangle(400, 300+yOffset, 100, 100);
                 squareR.setFill(Color.CADETBLUE);
                 transitionPane.getChildren().add(squareR);
 
+
+
                 squareR.setOnMouseClicked(event -> {
-                    onClick_chooseNode(squareR, finalI);
+                    onClick_chooseNode(squareR, finalI, "right");
                 });
+
+                if(rectangles.get(finalI) == null){
+                    System.out.println("Domyślnie zaznaczam więzeł prawy (tylko animacja)");
+                    onClick_chooseNode(squareR, finalI, "right");
+                }
 
                 Tooltip t3 = new Tooltip("Select this node");
                 Tooltip.install(squareR, t3);
@@ -556,6 +654,8 @@ public class HelloController {
                     squareR.setCursor(Cursor.DEFAULT); // Change cursor back to default when not hovering
                     //tooltip.hide();
                 });
+
+
 
 
 
@@ -611,20 +711,26 @@ public class HelloController {
     }
 
 
-    private void onClick_chooseNode(Rectangle rectangle, int level){
+    private void onClick_chooseNode(Rectangle rectangle, int level, String name){
 
-        if(rectangles.get(level) == null){
-            System.out.println("LEAV: null");
-        }
         if (rectangle.getFill() == Color.CADETBLUE) {
             rectangle.setFill(Color.RED);
             if(rectangles.get(level) != null){
                 Rectangle tmp = rectangles.get(level);
                 tmp.setFill(Color.CADETBLUE);
             }
+            // przypisanie więzłą z którego bedziemy rozwijać dalej drzewo
+            SpanningTree tmp_tree = spanningTrees.get(level);
+            tmp_tree.setChoseedCorner(name);
+            spanningTrees.set(level, tmp_tree);
             rectangles.set(level, rectangle);
+
+
         } else {
             rectangle.setFill(Color.CADETBLUE);
+            SpanningTree tmp_tree = spanningTrees.get(level);
+            tmp_tree.setChoseedCorner(null);
+            spanningTrees.set(level, tmp_tree);
             rectangles.set(level, null);
         }
 
@@ -725,12 +831,296 @@ public class HelloController {
 
     public void test(ActionEvent actionEvent) {
         System.out.println("Drawn: "+squareDrawn+"\tState: "+generateState);
+        System.out.println("Tree chosed Leaf: "+spanningTrees.get(0).getChoseedCorner());
+        System.out.println("spanning size: "+spanningTrees.size());
+
+    }
+
+
+    public List<Coordinates> coordinates = new ArrayList<>();
+
+
+
+
+    public JoinedState joinedState = new JoinedState();
+    public List<JoinedState> joinedStates = new ArrayList<>();
+    public void click_circleToJoin(Circle circle, Integer x, Integer y, Pane pane){    // 2 i 3 parametr to współrzedne, potrzebne do następnej funkcji
+        //  DARKCYAN    -   none                                                            // 4 paprametr, Pole gdzie rysujemy -> tutaj dodamy linię
+        //  RED     -   checked
+        //  BLACK   -   joined
+
+        if(circle.getFill().equals(Color.DARKCYAN)){
+            if (coordinates.size()<2){
+                circle.setFill(Color.RED);
+                Coordinates tmp_coordinate = new Coordinates(circle, x, y);
+                coordinates.add(tmp_coordinate);
+                joinedState.addCircle(circle);
+
+                if(coordinates.size()==2){
+                    Line joinLine = new Line(coordinates.get(0).getX(), coordinates.get(0).getY(), coordinates.get(1).getX(), coordinates.get(1).getY());
+                    pane.getChildren().add(joinLine);
+
+                    joinLine.setOnMouseEntered(event->{
+                            joinLine.setFill(Color.RED);
+                            joinLine.setCursor(Cursor.CROSSHAIR);
+                    });
+
+
+
+                    Coordinates cor1 = coordinates.get(0);  Coordinates cor2 = coordinates.get(1);
+                    cor1.circle.setFill(Color.BLACK);       cor2.circle.setFill(Color.BLACK);
+
+
+
+                    JoinedState test = new JoinedState();
+                    test.addCircle(joinedState.circle1);
+                    test.addCircle(joinedState.circle2);
+                    test.setLine(joinLine);
+
+
+                    //joinedState.setLine(joinLine);
+                    joinedStates.add(test);
+                    joinedState.clear();
+
+
+
+                    coordinates.clear();
+                }
+                System.out.println("Circle SIZE po: "+coordinates.size());
+            }
+        }
+        else if(circle.getFill().equals(Color.RED)){
+            circle.setFill(Color.DARKCYAN);
+            circle.setStroke(Color.BLACK);
+            coordinates.remove(coordinates.size()-1);
+            joinedState.clear();
+        }
+        else if(circle.getFill().equals(Color.BLACK)){
+
+            for(int i = 0; i<joinedStates.size(); i++){
+                if(joinedStates.get(i).circle1 == circle || joinedStates.get(i).circle2 == circle){
+                    Line tmp = joinedStates.get(i).getLine();
+                    JoinedState my_tmp = joinedStates.get(i);
+                    pane.getChildren().remove(my_tmp.getLine());
+
+                    // zmiana grafiki   tutaj kolor
+                    // wyzerowanie el. pomocniczego 'joinedState' i usunuęcie go elementu z listy
+                    my_tmp.circle1.setFill(Color.DARKCYAN);
+                    my_tmp.circle2.setFill(Color.DARKCYAN);
+                    joinedState.clear();
+                    joinedStates.remove(i);
+                }
+            }
+
+
+        }
+    }
+    public void drawStateMachine(ActionEvent actionEvent) {
+        Button nextButton = new Button("GO next");
+        nextButton.setOnAction(e -> System.out.println("Next button clicked!"));
+
+
+        VBox secondaryLayout = new VBox();
+        Pane statePane = new Pane();
+
+
+        for(int i = 0; i<spanningTrees.size(); i++){
+            int spaceY = i*250;
+            int spaceX1 = 100;
+            int spaceX2 = 400;
+            int spaceX3 = 700;
+            int radiusBig = 50;
+            int radiusSmall = 10;
+
+            boolean drawAll = false;
+            if(spanningTrees.get(i).getChoseedCorner() == null){        // jeśli puste narysuj wszytkie połączenia
+                Line MiddleToRight = new Line(350, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+                Line LeftToMiddle = new Line(150, 100+spaceY, spaceX2-radiusBig, 100+spaceY);
+                statePane.getChildren().addAll(MiddleToRight, LeftToMiddle);
+                drawAll = true;
+            }
+            if(spanningTrees.get(i).getChoseedCorner() != "left"){
+                Circle left = new Circle(100, 100+spaceY, radiusBig);
+                left.setFill(Color.CADETBLUE);
+                Text leftText = new Text(spaceX1-(radiusBig/5*4), spaceY+(1.75*radiusBig), spanningTrees.get(i).getLeftLeaf());
+                leftText.setTextAlignment(TextAlignment.CENTER);
+                Circle _catchL = new Circle(spaceX1, radiusBig+spaceY+radiusSmall, radiusSmall);
+                _catchL.setFill(Color.DARKCYAN);
+                _catchL.setOnMouseClicked(mouseEvent -> {
+                    click_circleToJoin(_catchL, spaceX1, radiusBig+spaceY+10, statePane);
+                });
+                _catchL.setOnMouseEntered(event -> {
+                    _catchL.setCursor(Cursor.HAND); // ----- HOVER effect
+                    if(_catchL.getFill().equals(Color.BLACK)){
+                        Tooltip t3 = new Tooltip("DELETE this 'join line'?");
+                        Tooltip.install(_catchL, t3);
+                        t3.setShowDelay(Duration.seconds(0));
+                    }       // message for user: Delete 'join line' ?
+                });
+
+
+
+                statePane.getChildren().addAll(left,leftText,_catchL);
+            }
+            else {
+                Line MiddleToRight = new Line(spaceX2-radiusBig, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+                statePane.getChildren().add(MiddleToRight);
+            }
+            if(spanningTrees.get(i).getChoseedCorner() != "middle"){
+
+                Circle middle = new Circle(spaceX2, 100+spaceY, radiusBig);
+                middle.setFill(Color.CADETBLUE);
+                Text middleText = new Text(spaceX2-(radiusBig/5*4), spaceY+(1.75*radiusBig), spanningTrees.get(i).getMiddleLeaf());
+                middleText.setTextAlignment(TextAlignment.CENTER);
+                Circle _catchM = new Circle(spaceX2, radiusBig+spaceY+radiusSmall, radiusSmall);
+                _catchM.setFill(Color.DARKCYAN);
+                _catchM.setOnMouseClicked(mouseEvent -> {
+                    click_circleToJoin(_catchM, spaceX2, radiusBig+spaceY+radiusSmall, statePane);
+                });
+                _catchM.setOnMouseEntered(event -> {
+                    _catchM.setCursor(Cursor.HAND);
+                    if(_catchM.getFill().equals(Color.BLACK)){
+                        Tooltip t3 = new Tooltip("DELETE this 'join line'?");
+                        Tooltip.install(_catchM, t3);
+                        t3.setShowDelay(Duration.seconds(0));
+                    }
+                });
+
+                statePane.getChildren().addAll(middle, middleText, _catchM);
+            }
+            else{
+                Line LeftToRight = new Line(150, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+                statePane.getChildren().add(LeftToRight);
+            }
+
+            if(spanningTrees.get(i).getChoseedCorner() != "right"){
+
+                Circle right = new Circle(spaceX3, 100+spaceY, radiusBig);
+                right.setFill(Color.CADETBLUE);
+                Text rightText = new Text(spaceX3-(radiusBig/5*4), spaceY+(1.75*radiusBig), spanningTrees.get(i).getRightLeaf());
+                rightText.setTextAlignment(TextAlignment.CENTER);
+                Circle _catchR = new Circle(spaceX3, radiusBig+spaceY+radiusSmall, radiusSmall);
+                _catchR.setFill(Color.DARKCYAN);
+                _catchR.setOnMouseClicked(mouseEvent -> {
+                    click_circleToJoin(_catchR, spaceX3, radiusBig+spaceY+radiusSmall, statePane);
+                });
+                _catchR.setOnMouseEntered(event -> {
+                    _catchR.setCursor(Cursor.HAND);
+                    if(_catchR.getFill().equals(Color.BLACK)){
+                        Tooltip t3 = new Tooltip("DELETE this 'join line'?");
+                        Tooltip.install(_catchR, t3);
+                        t3.setShowDelay(Duration.seconds(0));
+                    }
+                });
+
+
+                statePane.getChildren().addAll(right, rightText, _catchR);
+            }
+            else {
+                Line LeftToMiddle = new Line(150, 100+spaceY, spaceX2-radiusBig, 100+spaceY);
+                statePane.getChildren().add(LeftToMiddle);
+            }
+
+
+
+        }
+
+
+
+
+        secondaryLayout.getChildren().add(statePane);
+
+
+
+
+
+        Scene thirdScene = new Scene(secondaryLayout, 230, 100);
+
+        Stage thirdStage = new Stage();
+        thirdStage.setTitle("New Window");
+        thirdStage.setScene(thirdScene);
+
+        thirdStage.initStyle(StageStyle.UTILITY);
+        thirdStage.show();
     }
 }
 
 
 
 
+class JoinedState {
+    public Circle circle1=null;
+    public Circle circle2=null;
+    public Line line=null;
+
+    public void addCircle(Circle circle){
+        if(this.circle1==null){
+            System.out.println("CLASS Circle item:\t1");
+            this.circle1 = circle;
+        }else {
+            this.circle2 = circle;
+            System.out.println("CLASS Circle item:\t2");
+        }
+    }
+
+
+    public void clear(){
+        this.circle1=null;
+        this.circle2=null;
+        this.line=null;
+    }
+
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+    }
+
+    public Circle getCircle1() {
+        return circle1;
+    }
+
+    public Circle getCircle2() {
+        return circle2;
+    }
+}
+
+
+
+
+
+
+class Coordinates {
+    private Integer X;
+    private Integer Y;
+    public Circle circle;
+
+
+    public Coordinates(Circle circle, Integer x, Integer y) {
+        X = x;
+        Y = y;
+        this.circle = circle;
+    }
+
+    public Integer getX() {
+        return X;
+    }
+
+    public Integer getY() {
+        return Y;
+    }
+
+    public Circle getCircle() {
+        return circle;
+    }
+
+    public void setCircle(Circle circle) {
+        this.circle = circle;
+    }
+}
 
 
 class Corner {
@@ -759,7 +1149,7 @@ class Corner {
 
         boolean tmp = true;
         if((A==0 && I==0 && O==0 && E==0)){
-             tmp = false;
+            tmp = false;
         }
         return tmp;
     }

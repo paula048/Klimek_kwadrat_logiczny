@@ -5,6 +5,19 @@ public class SpanningTree {
     private String rightLeaf;
     private String middleLeaf;
     private Square square;
+    public String choseedCorner = "right";
+
+
+    public String getChoseedCorner() {
+        return choseedCorner;
+    }
+
+    public void setChoseedCorner(String choseedCorner) {
+        this.choseedCorner = choseedCorner;
+    }
+
+
+
 
     public SpanningTree(Square square) {
         this.square = square;
