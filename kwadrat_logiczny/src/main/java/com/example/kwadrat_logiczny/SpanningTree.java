@@ -21,9 +21,9 @@ public class SpanningTree {
 
     public SpanningTree(Square square) {
         this.square = square;
-        this.leftLeaf = this.square.getLu() + "\n&\n" + this.square.getLd();
-        this.middleLeaf = this.square.getRd() + "\n&\n" + this.square.getRu();
-        this.rightLeaf = this.square.getRd() + "\n&\n" + this.square.getLd();
+        this.leftLeaf = this.square.lu.getCornerName() + "\n&\n" + this.square.ld.getCornerName();
+        this.middleLeaf = this.square.rd.getCornerName() + "\n&\n" + this.square.ru.getCornerName();
+        this.rightLeaf = this.square.rd.getCornerName() + "\n&\n" + this.square.ld.getCornerName();
     }
 
 

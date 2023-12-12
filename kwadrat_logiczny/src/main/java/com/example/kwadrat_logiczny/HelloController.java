@@ -33,16 +33,6 @@ public class HelloController {
     private int squareDrawn = 0;
 
 
-    // stworzenie przykladowych kwadratów
-    Square square1 = new Square("¬ Immobilising","Taxiing","Immobilising","Stop");
-    Square square2 = new Square("Steps","Engine on","Open","Engine of");
-    Square square3 = new Square("Cleaned","Unloading","Locked","Empty");
-
-
-    // stworzenie przykladowych grafów
-    SpanningTree spanningTree = new SpanningTree(square1);
-    SpanningTree spanningTree2 = new SpanningTree(square2);
-    SpanningTree spanningTree3 = new SpanningTree(square3);
 
 
     @FXML
@@ -57,21 +47,50 @@ public class HelloController {
     public List<Square> saveSquares = new ArrayList<>();    // ważne -------------------------------------------------------
 
 
-    public List<Corner> isCornerChange = new ArrayList<>();     // ważne -------------------------------------------------------
+    public List<CornerNameChange> isCornerChangeNameChange = new ArrayList<>();     // ważne -------------------------------------------------------
 
     public List<Square> createdSquare = new ArrayList<>();
     public List<DrawSquare> drawSquares = new ArrayList<>();
 
     // spanningTrees & createdSquare    works correctly
 
+
+    public Label selectTrigger = null;
     public void initialize() {
         // zmienna sprwdzajaca czy zmieniono wartośći w kwadracie
-        isCornerChange.add(new Corner());
-        isCornerChange.add(new Corner());
-        isCornerChange.add(new Corner());
+        isCornerChangeNameChange.add(new CornerNameChange());
+        isCornerChangeNameChange.add(new CornerNameChange());
+        isCornerChangeNameChange.add(new CornerNameChange());
 
 
         createdSquare.add(new Square());
+
+
+
+        VBox vBox_tmp = new VBox();
+        Label txtMain = new Label("TRIGGER\nset name");
+        TextField textField = new TextField();
+
+        vBox_tmp.getChildren().addAll(txtMain,textField,btn_setName);
+        vBox_tmp.setAlignment(Pos.CENTER);
+        setPane.getChildren().add(vBox_tmp);
+        vBox_tmp.setStyle("-fx-background-color: #3bb1e42b;");
+        vBox_tmp.setPadding(new Insets(20));
+        setPane.setVisible(false);
+
+
+        // ustawianie wrtości triggera
+        btn_setName.setOnMouseClicked(mouseEvent -> {
+
+            System.out.println("Kliknieto TRIGGER");
+            String name = textField.getText();
+            if(selectTrigger!=null){
+                selectTrigger.setText(name);
+            }
+            selectTrigger = null;
+            setPane.setVisible(false);
+
+        });
 
 
 
@@ -192,7 +211,7 @@ public class HelloController {
         Scene secondScene = new Scene(secondaryLayout, 500, 380);
 
         Stage secondStage = new Stage();
-        secondStage.setTitle("New Window");
+        secondStage.setTitle("State Machine");
         secondStage.setScene(secondScene);
 
         secondStage.initStyle(StageStyle.UTILITY);
@@ -203,12 +222,49 @@ public class HelloController {
 
 
 
-    public void createTabPane(VBox box, Square square, Integer number){
+    private void openNewWindow_Parametr(String name) {
+
+
+
+        VBox secondaryLayout = new VBox();
+        
+        Label title = new Label("Paramtrs for corner "+name);
+        
+        TextField txt = new TextField();
+        Button btn_save = new Button();
+
+
+//        for (Parameter x :tmp_parametr) {
+//
+//        }
+
+
+
+        secondaryLayout.getChildren().addAll(title,txt,btn_save);
+        
+        
+        
+        
+        
+        Scene secondScene = new Scene(secondaryLayout, 500, 380);
+
+        Stage secondStage = new Stage();
+        secondStage.setTitle("Set parametrs");
+        secondStage.setScene(secondScene);
+
+        secondStage.initStyle(StageStyle.UTILITY);
+        secondStage.show();
+    }
+
+
+
+
+    public void createTabPane(VBox box, Integer number){
 
 
         Tab tab = new Tab();
         tab.setText("Square "+(number+1));
-        createTab(box, square, number);
+        createTab(box, number);
         tab.setContent(box);
         tabPane.getTabs().add(tab);
 
@@ -246,7 +302,7 @@ public class HelloController {
     }
 
 
-    public void createTab(VBox vBox, Square square, int nr_square){
+    public void createTab(VBox vBox, int nr_square){
 
         Rectangle rectangle = new Rectangle(200, 100, 100, 100);
         rectangle.setFill(Color.DARKSEAGREEN);
@@ -324,28 +380,28 @@ public class HelloController {
 
         // dodawanie ' triggera'  -  sprawdza czy zmieniono wrtość
         txt_corner1.textProperty().addListener((observable, oldValue, newValue) -> {
-            Corner tmpCorner = isCornerChange.get(nr_square);
-            tmpCorner.setA(1);
+            CornerNameChange tmpCornerNameChange = isCornerChangeNameChange.get(nr_square);
+            tmpCornerNameChange.setA(1);
             buttonSave.setStyle("-fx-background-color: #9e9e9e;");          // po zmianie, ustawia stan jako niezpisany, [ Button color ]
-            isCornerChange.set(nr_square, tmpCorner);
+            isCornerChangeNameChange.set(nr_square, tmpCornerNameChange);
         });
         txt_corner2.textProperty().addListener((observable, oldValue, newValue) -> {
-            Corner tmpCorner = isCornerChange.get(nr_square);
-            tmpCorner.setI(1);
+            CornerNameChange tmpCornerNameChange = isCornerChangeNameChange.get(nr_square);
+            tmpCornerNameChange.setI(1);
             buttonSave.setStyle("-fx-background-color: #9e9e9e;");
-            isCornerChange.set(nr_square, tmpCorner);
+            isCornerChangeNameChange.set(nr_square, tmpCornerNameChange);
         });
         txt_corner3.textProperty().addListener((observable, oldValue, newValue) -> {
-            Corner tmpCorner = isCornerChange.get(nr_square);
-            tmpCorner.setO(1);
+            CornerNameChange tmpCornerNameChange = isCornerChangeNameChange.get(nr_square);
+            tmpCornerNameChange.setO(1);
             buttonSave.setStyle("-fx-background-color: #9e9e9e;");
-            isCornerChange.set(nr_square, tmpCorner);
+            isCornerChangeNameChange.set(nr_square, tmpCornerNameChange);
         });
         txt_corner4.textProperty().addListener((observable, oldValue, newValue) -> {
-            Corner tmpCorner = isCornerChange.get(nr_square);
-            tmpCorner.setE(1);
+            CornerNameChange tmpCornerNameChange = isCornerChangeNameChange.get(nr_square);
+            tmpCornerNameChange.setE(1);
             buttonSave.setStyle("-fx-background-color: #9e9e9e;");
-            isCornerChange.set(nr_square, tmpCorner);
+            isCornerChangeNameChange.set(nr_square, tmpCornerNameChange);
         });
 
 
@@ -402,12 +458,12 @@ public class HelloController {
 
     private void click_buttonSave(TextField txt_corner2, TextField txt_corner1, TextField txt_corner4, TextField txt_corner3, int nr_square, Button buttonSave){
 
-        System.out.println("corner change: \t"+isCornerChange.get(0).isCornerChange());
+        System.out.println("corner change: \t"+ isCornerChangeNameChange.get(0).isCornerChange());
 
         Square squareSave = new Square(txt_corner2.getText(), txt_corner1.getText(), txt_corner4.getText(), txt_corner3.getText());
 
 
-        if(isCornerChange.get(nr_square).isCornerChange()){             // jeśli zmieniono nazwę aktualizuj kwadrat
+        if(isCornerChangeNameChange.get(nr_square).isCornerChange()){             // jeśli zmieniono nazwę aktualizuj kwadrat
             DrawSquare tmp = drawSquares.get(nr_square);
             tmp.luCorner.setText(txt_corner1.getText());
             tmp.ldCorner.setText(txt_corner2.getText());
@@ -420,9 +476,9 @@ public class HelloController {
         buttonSave.setStyle("-fx-background-color: #3cbd26;");
 
         // po zapisaniu aktualny stan isChange zeruje się
-        isCornerChange.set(0, new Corner());
-        isCornerChange.set(1, new Corner());
-        isCornerChange.set(2, new Corner());
+        isCornerChangeNameChange.set(0, new CornerNameChange());
+        isCornerChangeNameChange.set(1, new CornerNameChange());
+        isCornerChangeNameChange.set(2, new CornerNameChange());
 
 
 
@@ -459,13 +515,11 @@ public class HelloController {
     @FXML
     protected void addSquare() {
 
+
         String tmp;
         for (int i =0; i<squareDrawn; i++){
-            System.out.println("is CHANGE ?  ["+i+"]:   "+isCornerChange.get(i).isCornerChange());
+            System.out.println("is CHANGE ?  ["+i+"]:   "+ isCornerChangeNameChange.get(i).isCornerChange());
         }
-
-
-
 
         if(createdSquare.size()<3){
             createdSquare.add(new Square());
@@ -474,8 +528,9 @@ public class HelloController {
 
         if(squareDrawn <3){
 
+
             VBox tabBox = new VBox();
-            createTabPane(tabBox, createdSquare.get(squareDrawn), squareDrawn);
+            createTabPane(tabBox, squareDrawn);
 
             DrawSquare drawSquare = new DrawSquare();           // tmp
 
@@ -483,6 +538,7 @@ public class HelloController {
             // Draw a square
             Rectangle square = new Rectangle(200, 100+yOffset, 100, 100);
             drawingPane.getChildren().add(square);
+
 
             // Draw diagonals
             Line diagonal1 = new Line(200, 100+yOffset, 300, 200+yOffset);
@@ -497,30 +553,40 @@ public class HelloController {
 
 
 
+
+
+
+
             // TEXT name of corners
-            Label rightUp = new Label(createdSquare.get(squareDrawn).getRu());
+            Label rightUp = new Label(createdSquare.get(squareDrawn).ru.getCornerName());
             rightUp.setLayoutX(350);
             rightUp.setLayoutY(50+yOffset);
             drawSquare.setRuCorner(rightUp);            // dodanie do klasy przycisków  rogów
             drawingPane.getChildren().add(rightUp);
 
-            Label leftUp = new Label(createdSquare.get(squareDrawn).getLu());
+
+
+            Label leftUp = new Label(createdSquare.get(squareDrawn).lu.getCornerName());
             leftUp.setLayoutX(100);
             leftUp.setLayoutY(50+yOffset);
             drawSquare.setLuCorner(leftUp);
             drawingPane.getChildren().add(leftUp);
 
-            Label leftDown = new Label(createdSquare.get(squareDrawn).getLd());
+            Label leftDown = new Label(createdSquare.get(squareDrawn).ld.getCornerName());
             leftDown.setLayoutX(100);
             leftDown.setLayoutY(250+yOffset);
             drawSquare.setLdCorner(leftDown);
             drawingPane.getChildren().add(leftDown);
 
-            Label rightDown = new Label(createdSquare.get(squareDrawn).getRd());
+            Label rightDown = new Label(createdSquare.get(squareDrawn).rd.getCornerName());
             rightDown.setLayoutX(350);
             rightDown.setLayoutY(250+yOffset);
             drawSquare.setRdCorner(rightDown);
             drawingPane.getChildren().add(rightDown);
+
+
+
+
 
             drawSquares.add(drawSquare);            // dodanie (całego,jednego) obiektu z przyciskami do listy
 
@@ -822,7 +888,7 @@ public class HelloController {
 
         System.out.println("\nTEST   Draw squares: "+drawSquares.get(0).luCorner.getText());
         System.out.println("Spanning tree Label: "+spanningTreeLabels.get(0).leftLeaf.getText()+"\t"+spanningTreeLabels.get(0).rightLeaf.getText());
-        System.out.println("\nsave SQUARE: "+saveSquares.get(1).getLu()+"\t"+saveSquares.get(1).getLd());
+        System.out.println("\nsave SQUARE: "+saveSquares.get(1).lu.getCornerName()+"\t"+saveSquares.get(1).ld.getCornerName());
 
 
 
@@ -833,6 +899,7 @@ public class HelloController {
         System.out.println("Drawn: "+squareDrawn+"\tState: "+generateState);
         System.out.println("Tree chosed Leaf: "+spanningTrees.get(0).getChoseedCorner());
         System.out.println("spanning size: "+spanningTrees.size());
+        System.out.println("SHOW createSquare: "+saveSquares.get(0).lu.getCornerName());
 
     }
 
@@ -840,6 +907,15 @@ public class HelloController {
     public List<Coordinates> coordinates = new ArrayList<>();
 
 
+    public Label AddTrigger(int x1, int y1, int x2, int y2){
+        Label trigger = new Label("TRIGGER");
+        int X = (x1+x2)/2;
+        int Y = (y1+y2)/2;
+        trigger.setLayoutX(X);
+        trigger.setLayoutY(Y);
+
+        return trigger;
+    }
 
 
     public JoinedState joinedState = new JoinedState();
@@ -859,7 +935,23 @@ public class HelloController {
                 if(coordinates.size()==2){
                     Line joinLine = new Line(coordinates.get(0).getX(), coordinates.get(0).getY(), coordinates.get(1).getX(), coordinates.get(1).getY());
                     pane.getChildren().add(joinLine);
+                    Label trigger = AddTrigger(coordinates.get(0).getX(), coordinates.get(0).getY(), coordinates.get(1).getX(), coordinates.get(1).getY());
+                    pane.getChildren().add(trigger);
 
+                    //System.out.println("selected TRIGGER: "+selectTrigger.getText());
+                    trigger.setOnMouseEntered(mouseEvent -> {
+                        trigger.setCursor(Cursor.HAND);
+                        trigger.setTextFill(Color.RED);
+                    });
+                    trigger.setOnMouseExited(mouseEvent -> {
+                        trigger.setTextFill(Color.BLACK);
+                    });
+
+                    trigger.setOnMouseClicked(mouseEvent -> {
+                        setPane.setVisible(true);
+                        selectTrigger = trigger;
+                    });
+                    joinedState.setTrigger(trigger);
                     joinLine.setOnMouseEntered(event->{
                             joinLine.setFill(Color.RED);
                             joinLine.setCursor(Cursor.CROSSHAIR);
@@ -899,9 +991,10 @@ public class HelloController {
 
             for(int i = 0; i<joinedStates.size(); i++){
                 if(joinedStates.get(i).circle1 == circle || joinedStates.get(i).circle2 == circle){
-                    Line tmp = joinedStates.get(i).getLine();
+                    // usuwanie linii  i  trigerra(Label)
                     JoinedState my_tmp = joinedStates.get(i);
                     pane.getChildren().remove(my_tmp.getLine());
+                    pane.getChildren().remove(my_tmp.getTrigger());
 
                     // zmiana grafiki   tutaj kolor
                     // wyzerowanie el. pomocniczego 'joinedState' i usunuęcie go elementu z listy
@@ -915,6 +1008,12 @@ public class HelloController {
 
         }
     }
+
+
+
+
+    public Pane setPane = new Pane();
+    public Button btn_setName = new Button("SET");
     public void drawStateMachine(ActionEvent actionEvent) {
         Button nextButton = new Button("GO next");
         nextButton.setOnAction(e -> System.out.println("Next button clicked!"));
@@ -959,11 +1058,25 @@ public class HelloController {
                 });
 
 
-
                 statePane.getChildren().addAll(left,leftText,_catchL);
             }
             else {
                 Line MiddleToRight = new Line(spaceX2-radiusBig, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+                Label trigger = AddTrigger(spaceX2-radiusBig, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+
+                // click and hoover     Trigger Label
+                trigger.setOnMouseEntered(mouseEvent -> {
+                    trigger.setCursor(Cursor.HAND);
+                    trigger.setTextFill(Color.RED);
+                });
+                trigger.setOnMouseExited(mouseEvent -> {
+                    trigger.setTextFill(Color.BLACK);
+                });
+                trigger.setOnMouseClicked(mouseEvent -> {
+                    setPane.setVisible(true);
+                    selectTrigger = trigger;
+                });
+                statePane.getChildren().add(trigger);
                 statePane.getChildren().add(MiddleToRight);
             }
             if(spanningTrees.get(i).getChoseedCorner() != "middle"){
@@ -990,6 +1103,21 @@ public class HelloController {
             }
             else{
                 Line LeftToRight = new Line(150, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+                Label trigger = AddTrigger(150, 100+spaceY, spaceX3-radiusBig, 100+spaceY);
+
+                // click and hoover     Trigger Label
+                trigger.setOnMouseEntered(mouseEvent -> {
+                    trigger.setCursor(Cursor.HAND);
+                    trigger.setTextFill(Color.RED);
+                });
+                trigger.setOnMouseExited(mouseEvent -> {
+                    trigger.setTextFill(Color.BLACK);
+                });
+                trigger.setOnMouseClicked(mouseEvent -> {
+                    setPane.setVisible(true);
+                    selectTrigger = trigger;
+                });
+                statePane.getChildren().add(trigger);
                 statePane.getChildren().add(LeftToRight);
             }
 
@@ -1018,6 +1146,21 @@ public class HelloController {
             }
             else {
                 Line LeftToMiddle = new Line(150, 100+spaceY, spaceX2-radiusBig, 100+spaceY);
+                Label trigger = AddTrigger(150, 100+spaceY, spaceX2-radiusBig, 100+spaceY);
+
+                // click and hoover     Trigger Label
+                trigger.setOnMouseEntered(mouseEvent -> {
+                    trigger.setCursor(Cursor.HAND);
+                    trigger.setTextFill(Color.RED);
+                });
+                trigger.setOnMouseExited(mouseEvent -> {
+                    trigger.setTextFill(Color.BLACK);
+                });
+                trigger.setOnMouseClicked(mouseEvent -> {
+                    setPane.setVisible(true);
+                    selectTrigger = trigger;
+                });
+                statePane.getChildren().add(trigger);
                 statePane.getChildren().add(LeftToMiddle);
             }
 
@@ -1026,12 +1169,12 @@ public class HelloController {
         }
 
 
+        // Panel gdzie ustawimy nazwę wybranego triggera
 
 
+
+        secondaryLayout.getChildren().add(setPane);
         secondaryLayout.getChildren().add(statePane);
-
-
-
 
 
         Scene thirdScene = new Scene(secondaryLayout, 230, 100);
@@ -1053,6 +1196,16 @@ class JoinedState {
     public Circle circle2=null;
     public Line line=null;
 
+    public Label getTrigger() {
+        return trigger;
+    }
+
+    public void setTrigger(Label trigger) {
+        this.trigger = trigger;
+    }
+
+    public Label trigger = null;
+
     public void addCircle(Circle circle){
         if(this.circle1==null){
             System.out.println("CLASS Circle item:\t1");
@@ -1068,6 +1221,7 @@ class JoinedState {
         this.circle1=null;
         this.circle2=null;
         this.line=null;
+        this.trigger = null;
     }
 
 
@@ -1123,7 +1277,7 @@ class Coordinates {
 }
 
 
-class Corner {
+class CornerNameChange {
     private Integer A = 0;
     private Integer I = 0;
     private Integer O = 0;
