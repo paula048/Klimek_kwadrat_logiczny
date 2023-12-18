@@ -1,5 +1,6 @@
 package com.example.kwadrat_logiczny;
 
+import javafx.animation.PauseTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
@@ -56,14 +57,15 @@ public class HelloController {
 
 
     public Label selectTrigger = null;
+    public boolean isOpenWindowSetsParametrs = false;       // aby nie wchodziły ze sobą w kolizję, [najechanie myszką i kliknięcie]
+
+    public List<CornerButton> CornerButtons = new ArrayList<>();
     public void initialize() {
         // zmienna sprwdzajaca czy zmieniono wartośći w kwadracie
         isCornerChangeNameChange.add(new CornerNameChange());
         isCornerChangeNameChange.add(new CornerNameChange());
         isCornerChangeNameChange.add(new CornerNameChange());
 
-
-        createdSquare.add(new Square());
 
 
 
@@ -214,38 +216,45 @@ public class HelloController {
         secondStage.setTitle("State Machine");
         secondStage.setScene(secondScene);
 
-        secondStage.initStyle(StageStyle.UTILITY);
+        //secondStage.initStyle(StageStyle.UTILITY);
         secondStage.show();
     }
 
 
 
 
+    public Square choosedCorner = null;
 
-    private void openNewWindow_Parametr(String name) {
+
+    public String saveTXT = "";
+
+    private void openNewWindow_Parametr(String name, int nr_square) {
+
+
+        isOpenWindowSetsParametrs = true;   // blokowanie akcji najechan myszką -- Hover
+
+        // Tooltip step 3   installl / uninstall
+        Square tmpSquare = saveSquares.get(nr_square);
+        tmpSquare.lu.uninstall_Tooltip();
+        tmpSquare.ru.uninstall_Tooltip();
+        tmpSquare.ld.uninstall_Tooltip();
+        tmpSquare.rd.uninstall_Tooltip();
+        saveSquares.set(nr_square, tmpSquare);
+
+
+
 
 
 
         VBox secondaryLayout = new VBox();
         
-        Label title = new Label("Paramtrs for corner "+name);
-        
+        Label title = new Label("Paramtrs for corner [ "+name+" ]");
         TextField txt = new TextField();
-        Button btn_save = new Button();
-
-
-//        for (Parameter x :tmp_parametr) {
-//
-//        }
-
-
+        Button btn_save = new Button("Save");
 
         secondaryLayout.getChildren().addAll(title,txt,btn_save);
-        
-        
-        
-        
-        
+
+
         Scene secondScene = new Scene(secondaryLayout, 500, 380);
 
         Stage secondStage = new Stage();
@@ -254,7 +263,93 @@ public class HelloController {
 
         secondStage.initStyle(StageStyle.UTILITY);
         secondStage.show();
+
+
+        // jeśli zamkniesz okno, pownownie zainstaluje Tooltip
+        secondStage.setOnCloseRequest(event -> {
+            isOpenWindowSetsParametrs = false;
+            tmpSquare.lu.install_Tooltip();
+            tmpSquare.ru.install_Tooltip();
+            tmpSquare.ld.install_Tooltip();
+            tmpSquare.rd.install_Tooltip();
+            saveSquares.set(nr_square, tmpSquare);
+        });
+
+
+        btn_save.setOnMouseClicked(event -> {
+
+            System.out.println("value txt: "+txt.getText());
+
+            Square tmp = saveSquares.get(nr_square);
+            Parametr parametr = new Parametr(txt.getText());
+            isOpenWindowSetsParametrs = false;
+
+            switch(name) {
+                case "A":
+                    tmp.lu.addParameter(parametr);
+                    tmp.lu.install_Tooltip();
+                    tmp.ru.install_Tooltip();
+                    tmp.ld.install_Tooltip();
+                    tmp.rd.install_Tooltip();
+                    break;
+
+                case "E":
+                    tmp.ru.addParameter(parametr);
+                    tmp.lu.install_Tooltip();
+                    tmp.ru.install_Tooltip();
+                    tmp.ld.install_Tooltip();
+                    tmp.rd.install_Tooltip();
+                    break;
+
+                case "I":
+                    tmp.ld.addParameter(parametr);
+                    tmp.lu.install_Tooltip();
+                    tmp.ru.install_Tooltip();
+                    tmp.ld.install_Tooltip();
+                    tmp.rd.install_Tooltip();
+                    break;
+
+                case "O":
+                    tmp.rd.addParameter(parametr);
+                    tmp.lu.install_Tooltip();
+                    tmp.ru.install_Tooltip();
+                    tmp.ld.install_Tooltip();
+                    tmp.rd.install_Tooltip();
+                    break;
+
+                default:
+                    System.out.println("Incorrect parametr in function");
+            }
+
+            saveSquares.set(nr_square, tmp);
+            secondStage.close();
+
+        });
+
+
+
+
+        
+
+        
+
     }
+
+
+    private void showAddedParametrs(String name, int nr_square, Button this_button) {
+
+
+
+
+
+
+
+
+
+
+
+    }
+
 
 
 
@@ -296,10 +391,58 @@ public class HelloController {
     }
 
 
+    public void setTooltip(String name, int nr_square, Button btn, Boolean instal){
 
-    public void saveSquare(){
+        Square tmpCorner = saveSquares.get(nr_square);
+        List<Parametr> parametrs = new ArrayList<>();
+        String txt = "";
+
+
+        switch(name) {
+            case "A":
+                parametrs = tmpCorner.lu.getParametersList();
+                break;
+
+            case "E":
+                parametrs = tmpCorner.ru.getParametersList();
+                break;
+
+            case "I":
+                parametrs = tmpCorner.ld.getParametersList();
+                break;
+
+            case "O":
+                parametrs = tmpCorner.rd.getParametersList();
+                break;
+
+            default:
+                System.out.println("Incorrect parametr in function");
+        }
+
+
+        if(parametrs.size()==0 || parametrs ==  null){
+            txt = "No added parametrs";
+        }
+        else{
+            for (Parametr param : parametrs) {
+                txt += param.getName()+":\t"+param.getValue()+"\n";
+            }
+        }
+
+
+        Tooltip t = new Tooltip(txt);
+        if(instal==true){
+
+            Tooltip.install(btn, t);
+            t.setShowDelay(Duration.seconds(0));
+        }
+        else {
+            Tooltip.install(btn, t);
+        }
+
 
     }
+
 
 
     public void createTab(VBox vBox, int nr_square){
@@ -329,12 +472,93 @@ public class HelloController {
         Button b4 = new Button("O");
 
 
-        /*
-        checkLeaf_color(b1);
-        checkLeaf_color(b2);
-        checkLeaf_color(b3);
-        checkLeaf_color(b4);
-        */
+
+
+
+        // tooltip step 1 alternative
+        CornerButton buttons = new CornerButton(b1,b2,b3,b4);
+        CornerButtons.add(buttons);
+
+
+
+
+
+
+        b1.setOnMouseClicked(event->{
+                openNewWindow_Parametr("A", nr_square);
+        });
+        b2.setOnMouseClicked(event->{
+            openNewWindow_Parametr("E", nr_square);
+        });
+        b3.setOnMouseClicked(event->{
+            openNewWindow_Parametr("I", nr_square);
+        });
+        b4.setOnMouseClicked(event->{
+            openNewWindow_Parametr("O", nr_square);
+        });
+
+
+
+
+
+
+//        b1.setOnMouseEntered(mouseEvent -> {
+//            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));       // To opuznienie i zmienna isOpenWindowSetsParametrs są konieczne
+//            pause.setOnFinished(event -> {                                              // aby zdarzenie kliknięcia i najechani nie weszły w kolizję
+//                if (!isOpenWindowSetsParametrs) {
+//                    showAddedParametrs("A", nr_square, b1);
+//                }
+//            });
+//            pause.play();
+//        });
+
+
+//              NOW-------------------------------------------------------------------------
+//        b1.setOnAction(event -> {
+//            Stage secondStage = new Stage();
+//            StackPane secondLayout = new StackPane();
+//            secondLayout.getChildren().add(new Button("Second Stage"));
+//            Scene secondScene = new Scene(secondLayout, 300, 200);
+//            secondStage.setScene(secondScene);
+//            secondStage.show();
+//        });
+//
+
+
+
+//        b1.setOnMouseExited(mouseEvent -> {
+//            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));       // To opuznienie i zmienna isOpenWindowSetsParametrs są konieczne
+//            pause.setOnFinished(event -> {                                              // aby zdarzenie kliknięcia i najechani nie weszły w kolizję
+//                if (!isOpenWindowSetsParametrs) {
+//                    showAddedParametrs("A", nr_square, b1);
+//                }
+//            });
+//            pause.play();
+//        });
+//
+//
+//
+//        b2.setOnMouseEntered(mouseEvent -> {
+//            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
+//            pause.setOnFinished(event -> {
+//                if (!isOpenWindowSetsParametrs) {
+//                    showAddedParametrs("E", nr_square, b2);
+//                }
+//            });
+//            pause.play();
+//        });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
         //mozliwosc optymalizacji  przez liste
@@ -350,6 +574,8 @@ public class HelloController {
         gridPane.add(rectangle,1,1);
         gridPane.add(b3,0,2);
         gridPane.add(b4,2,2);
+
+
 
         vBox.getChildren().add(gridPane);
 
@@ -470,7 +696,6 @@ public class HelloController {
             tmp.rdCorner.setText(txt_corner3.getText());
             tmp.ruCorner.setText(txt_corner4.getText());
             drawSquares.set(nr_square,tmp);
-
         }
 
         buttonSave.setStyle("-fx-background-color: #3cbd26;");
@@ -479,6 +704,13 @@ public class HelloController {
         isCornerChangeNameChange.set(0, new CornerNameChange());
         isCornerChangeNameChange.set(1, new CornerNameChange());
         isCornerChangeNameChange.set(2, new CornerNameChange());
+
+
+        // Tooltip step 2
+        squareSave.lu.setTooltip(CornerButtons.get(nr_square).A);
+        squareSave.ru.setTooltip(CornerButtons.get(nr_square).E);
+        squareSave.ld.setTooltip(CornerButtons.get(nr_square).I);
+        squareSave.rd.setTooltip(CornerButtons.get(nr_square).O);
 
 
 
@@ -502,6 +734,8 @@ public class HelloController {
         else{
             Update_SpanningTree();
         }
+
+
 
 
 
@@ -895,13 +1129,7 @@ public class HelloController {
 
     }
 
-    public void test(ActionEvent actionEvent) {
-        System.out.println("Drawn: "+squareDrawn+"\tState: "+generateState);
-        System.out.println("Tree chosed Leaf: "+spanningTrees.get(0).getChoseedCorner());
-        System.out.println("spanning size: "+spanningTrees.size());
-        System.out.println("SHOW createSquare: "+saveSquares.get(0).lu.getCornerName());
 
-    }
 
 
     public List<Coordinates> coordinates = new ArrayList<>();
@@ -1186,7 +1414,23 @@ public class HelloController {
         thirdStage.initStyle(StageStyle.UTILITY);
         thirdStage.show();
     }
+
+
+
+
+    public void test(ActionEvent actionEvent) {
+
+        System.out.println("my parametrs A: "+saveSquares.get(0).lu.parametersAsString()+"\n");
+        System.out.println("my parametrs O: "+saveSquares.get(0).rd.parametersAsString()+"\n");
+
+    }
+
+
 }
+
+
+
+
 
 
 
@@ -1239,6 +1483,24 @@ class JoinedState {
 
     public Circle getCircle2() {
         return circle2;
+    }
+}
+
+
+
+
+class CornerButton {
+    public Button A;
+    public Button E;
+    public Button I;
+    public Button O;
+
+
+    public CornerButton(Button a, Button e, Button i, Button o) {
+        A = a;
+        E = e;
+        I = i;
+        O = o;
     }
 }
 
