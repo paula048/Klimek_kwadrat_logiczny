@@ -8,19 +8,43 @@ import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.*;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
+import javax.imageio.ImageIO;
+import java.awt.image.RenderedImage;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.WritableImage;
+import javafx.scene.image.Image;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+
+import javax.imageio.ImageIO;
+
 
 public class HelloController {
 
@@ -228,10 +252,13 @@ public class HelloController {
 
     public String saveTXT = "";
 
+    public String settedValue = null;
+
     private void openNewWindow_Parametr(String name, int nr_square) {
 
-
+        settedValue = null;
         isOpenWindowSetsParametrs = true;   // blokowanie akcji najechan myszką -- Hover
+
 
         // Tooltip step 3   installl / uninstall
         Square tmpSquare = saveSquares.get(nr_square);
@@ -250,9 +277,46 @@ public class HelloController {
         
         Label title = new Label("Paramtrs for corner [ "+name+" ]");
         TextField txt = new TextField();
+        TextField tmp_txt = new TextField();
+        tmp_txt.setVisible(false);
+
+
+
+        ChoiceBox<String> choiceBox = new ChoiceBox<>();
+        choiceBox.getItems().add("true");
+        choiceBox.getItems().add("false");
+        choiceBox.getItems().add("another");
+        choiceBox.getSelectionModel().select("false");
+        settedValue = "false";
+
+        choiceBox.getSelectionModel().selectedItemProperty().addListener((v, oldValue, newValue) -> {
+            if (newValue.equals("true")) {
+                settedValue = "true";
+                tmp_txt.setVisible(false);
+            }
+            else if(newValue.equals("false")){
+                settedValue = "false";
+                tmp_txt.setVisible(false);
+            }
+            else{
+                tmp_txt.clear();
+                tmp_txt.setVisible(true);
+                settedValue = "another";
+            }
+        });
+
+
+        HBox hBox1 = new HBox(new Label("Name: "), txt);
+        HBox hBox2 = new HBox(new Label("Value: "), tmp_txt);
+
+
         Button btn_save = new Button("Save");
 
-        secondaryLayout.getChildren().addAll(title,txt,btn_save);
+
+
+
+
+        secondaryLayout.getChildren().addAll(title,hBox1, hBox2,choiceBox,btn_save);
 
 
         Scene secondScene = new Scene(secondaryLayout, 500, 380);
@@ -282,6 +346,10 @@ public class HelloController {
 
             Square tmp = saveSquares.get(nr_square);
             Parametr parametr = new Parametr(txt.getText());
+            if(settedValue=="another"){
+                settedValue = tmp_txt.getText();
+            }
+            parametr.setValue(settedValue);
             isOpenWindowSetsParametrs = false;
 
             switch(name) {
@@ -336,21 +404,36 @@ public class HelloController {
     }
 
 
-    private void showAddedParametrs(String name, int nr_square, Button this_button) {
+
+
+    public void captureAndSaveDisplay2(VBox mainVBox){
+        FileChooser fileChooser = new FileChooser();
+
+        //Set extension filter
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("png files (*.png)", "*.png"));
+
+        //Prompt user to select a file
+        File file = fileChooser.showSaveDialog(null);
+
+
+        if(file != null){
+            try {
+                //Pad the capture area
+                WritableImage writableImage = new WritableImage((int)mainVBox.getWidth() + 20,
+                        (int)mainVBox.getHeight() + 20);
+                //snapshot(null, writableImage);
+                mainVBox.snapshot(null, writableImage);
+                RenderedImage renderedImage = SwingFXUtils.fromFXImage(writableImage, null);
+
+
+                ImageIO.write(renderedImage,"png",file);
 
 
 
 
-
-
-
-
-
-
-
+            } catch (IOException ex) { ex.printStackTrace(); }
+        }
     }
-
-
 
 
 
@@ -1148,8 +1231,11 @@ public class HelloController {
 
     public JoinedState joinedState = new JoinedState();
     public List<JoinedState> joinedStates = new ArrayList<>();
-    public void click_circleToJoin(Circle circle, Integer x, Integer y, Pane pane){    // 2 i 3 parametr to współrzedne, potrzebne do następnej funkcji
-        //  DARKCYAN    -   none                                                            // 4 paprametr, Pole gdzie rysujemy -> tutaj dodamy linię
+    public void click_circleToJoin(Circle circle, Integer x, Integer y, Pane pane){
+        // 2 i 3 parametr to współrzedne, potrzebne do następnej funkcji
+        // 4 paprametr, Pole gdzie rysujemy -> tutaj dodamy linię
+
+        //  DARKCYAN    -   none
         //  RED     -   checked
         //  BLACK   -   joined
 
@@ -1166,6 +1252,8 @@ public class HelloController {
                     Label trigger = AddTrigger(coordinates.get(0).getX(), coordinates.get(0).getY(), coordinates.get(1).getX(), coordinates.get(1).getY());
                     pane.getChildren().add(trigger);
 
+                    joinedState.setTrigger(trigger);
+
                     //System.out.println("selected TRIGGER: "+selectTrigger.getText());
                     trigger.setOnMouseEntered(mouseEvent -> {
                         trigger.setCursor(Cursor.HAND);
@@ -1179,7 +1267,7 @@ public class HelloController {
                         setPane.setVisible(true);
                         selectTrigger = trigger;
                     });
-                    joinedState.setTrigger(trigger);
+
                     joinLine.setOnMouseEntered(event->{
                             joinLine.setFill(Color.RED);
                             joinLine.setCursor(Cursor.CROSSHAIR);
@@ -1196,6 +1284,7 @@ public class HelloController {
                     test.addCircle(joinedState.circle1);
                     test.addCircle(joinedState.circle2);
                     test.setLine(joinLine);
+                    test.setTrigger(trigger);
 
 
                     //joinedState.setLine(joinLine);
@@ -1401,8 +1490,14 @@ public class HelloController {
 
 
 
+        Button btn_save = new Button("SAVE as image");
+        secondaryLayout.getChildren().add(btn_save);
         secondaryLayout.getChildren().add(setPane);
         secondaryLayout.getChildren().add(statePane);
+
+        btn_save.setOnMouseClicked(mouseEvent -> {
+            captureAndSaveDisplay2(secondaryLayout);
+        });
 
 
         Scene thirdScene = new Scene(secondaryLayout, 230, 100);
@@ -1414,6 +1509,10 @@ public class HelloController {
         thirdStage.initStyle(StageStyle.UTILITY);
         thirdStage.show();
     }
+
+
+
+
 
 
 
@@ -1439,6 +1538,7 @@ class JoinedState {
     public Circle circle1=null;
     public Circle circle2=null;
     public Line line=null;
+    public Label trigger = null;
 
     public Label getTrigger() {
         return trigger;
@@ -1448,7 +1548,7 @@ class JoinedState {
         this.trigger = trigger;
     }
 
-    public Label trigger = null;
+
 
     public void addCircle(Circle circle){
         if(this.circle1==null){

@@ -2,11 +2,11 @@ package com.example.kwadrat_logiczny;
 
 public class Parametr {
     private String name = "@";
-    private Boolean value = false;
+    private String value = "false";
 
     public Parametr(String name) {
         this.name = name;
-        this.value = true;
+        this.value = "true";
     }
 
 
@@ -18,11 +18,11 @@ public class Parametr {
         this.name = name;
     }
 
-    public Boolean getValue() {
+    public String getValue() {
         return value;
     }
 
-    public void setValue(Boolean value) {
+    public void setValue(String value) {
         this.value = value;
     }
 }
